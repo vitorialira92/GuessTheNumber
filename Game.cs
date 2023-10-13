@@ -23,36 +23,42 @@ namespace GuessTheNumber
 
         public bool game()
         {
-            bool correctLevel = false;
+            bool correctLevel;
 
             do
             {
                 Console.WriteLine("> Choose your level from 1 to 5! Make sure to type right or we'll ask again :)");
                 correctLevel = int.TryParse(Console.ReadLine(), out level);
-                correctLevel = correctLevel ? (level >= 1 && level <= 5) : false;
+                correctLevel = correctLevel && (level >= 1 && level <= 5);
             } while (!correctLevel);
 
             this.generateNumber(); //attempts here
 
             if (level == 5)
-                Console.WriteLine(">>> The number has 4 decimals");
+                Console.WriteLine(">>> The number has 4 decimals. Type it in the following format: xxx,xxxx");
 
 
 
-            int op; bool validation = false;
+            int op; bool validation;
             bool won = false;
 
             while (attempts > 0)
             {
+                int aux = 0;
                 do
                 {
+                    if (aux > 0)
+                        Console.WriteLine("Please type a valid option!\n");
                     getOptions();
                     Console.WriteLine($"You have {attempts} attempts !!");
                     Console.WriteLine("Type your option!");
                     validation = int.TryParse(Console.ReadLine(), out op);
-                    Console.WriteLine("------------------------------------------------------------------------\n\n\n");
-                    validation = validation ? (op > 0 && op <= 3) : false;
+                    Console.WriteLine("------------------------------------------------------------------------\n");
+                    validation = validation && (op > 0 && op <= 3);
+                    aux++;
                 } while (!correctLevel);
+
+                Console.Clear();
 
                 if (op == 3)
                     won = (level == 5) ? takeAGuessLevelFive() : takeAGuess();
@@ -70,13 +76,12 @@ namespace GuessTheNumber
                 }
             }
 
-            Console.Clear();
             if (!won)
                 Console.WriteLine("Your attempts are over :/");
             Console.WriteLine($"You accumulated {points} points!");
             Console.WriteLine("But... you also lost... Your number was.... ");
             Console.Write((level == 5) ? numberLevelFive.ToString() : number.ToString());
-            Console.WriteLine("------------------------------------------------------------------------\n\n\n");
+            Console.WriteLine("   ------------------------------\n\n\n");
 
             return false;
         }
@@ -91,7 +96,6 @@ namespace GuessTheNumber
 
         public void chooseOption(int op)
         {
-            Console.Clear();
             decimal multiple = Math.Round(numberLevelFive / 100) * 100;
 
             string option = "";
@@ -113,7 +117,6 @@ namespace GuessTheNumber
 
             if (guess == number)
             {
-                Console.Clear();
                 Console.WriteLine($"Congratulations!! You guessed right in the level {level} : {number}\n");
                 Console.WriteLine("You get " + level * 5 + " points !!");
                 points += level * 5;
@@ -148,7 +151,6 @@ namespace GuessTheNumber
 
             if (guess == numberLevelFive)
             {
-                Console.Clear();
                 Console.WriteLine("Congratulations!! You guessed right in the hardest level");
                 Console.WriteLine("You get " + 100 + " points !!");
                 points += 100;
@@ -159,6 +161,7 @@ namespace GuessTheNumber
             {
                 Console.WriteLine("You did not guess it right but here's a tip for you:");
                 long difference = (long) Math.Abs(Math.Abs(numberLevelFive) - Math.Abs(guess));
+               
                 Console.WriteLine($"Your guess and the right answer are exactly {difference} integers away.\n");
                 if (difference == 0)
                 {
@@ -196,29 +199,29 @@ namespace GuessTheNumber
 
             if (level == 5)
             {
-                decimal limiteInferior = (decimal)-Math.Pow(100.0, double.Parse(level.ToString()));  
-                decimal limiteSuperior = limiteInferior * (-1); 
+                decimal inferiorLimit = (decimal)-Math.Pow(100.0, double.Parse(level.ToString()));  
+                decimal superiorLimit = inferiorLimit * (-1); 
 
                 attempts = 38;
 
-                Console.WriteLine($"Your number is between {limiteInferior} and {limiteSuperior}");
+                Console.WriteLine($"Your number is between {inferiorLimit} and {superiorLimit}");
                 Console.WriteLine($"You have {attempts} attempts.");
 
 
-                numberLevelFive = (decimal)(random.NextDouble() * ((double)limiteSuperior - (double)limiteInferior) + (double)limiteInferior);
+                numberLevelFive = (decimal)(random.NextDouble() * ((double)superiorLimit - (double)inferiorLimit) + (double)inferiorLimit);
 
                 numberLevelFive = Math.Round(numberLevelFive, 4);
 
             }
             else
             {
-                long limiteInferior = (long)-Math.Pow(100.0, double.Parse(level.ToString()));
-                long limiteSuperior = limiteInferior * (-1); 
+                long inferiorLimit = (long)-Math.Pow(100.0, double.Parse(level.ToString()));
+                long superiorLimit = inferiorLimit * (-1); 
 
                 attempts = (int)Math.Pow(level, 3) + 5;
 
-                number = (long)(random.NextDouble() * (limiteSuperior - limiteInferior) + limiteInferior);
-                Console.WriteLine($"Your number is between {limiteInferior} and {limiteSuperior}");
+                number = (long)(random.NextDouble() * (superiorLimit - inferiorLimit) + inferiorLimit);
+                Console.WriteLine($"Your number is between {inferiorLimit} and {superiorLimit}");
                 Console.WriteLine($"You have {attempts} attempts.");
 
             }
